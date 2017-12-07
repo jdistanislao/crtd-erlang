@@ -3,24 +3,19 @@
 -export([new/0, add/2, lookup/2, compare/2, merge/2]).
 
 new() ->
-  [].
+  sets:new().
 
-add(Element, GSet) ->
-  case lookup(Element, GSet) of
-    true -> GSet;
-    _    -> [Element | GSet]
-  end.
+add(Element, Set) ->
+  sets:add_element(Element, Set).
 
-lookup(Element, GSet) ->
-  lists:member(Element, GSet).
+lookup(Element, Set) ->
+  sets:is_element(Element, Set).
 
-compare(GSet1, GSet2) ->
-  lists:all(fun(X) -> lookup(X, GSet2) end, GSet1).
+compare(Set1, Set2) ->
+  sets:is_subset(Set1, Set2).
 
-merge(Gset, []) ->
-  Gset;
-merge(GSet1, [H|T]) ->
-  merge(add(H, GSet1), T).
+merge(Set1, Set2) ->
+  sets:union(Set1, Set2).
 
 
 
