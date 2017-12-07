@@ -3,7 +3,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 new_test() ->
-	?assertEqual([], gset:new()).
+	?assert(same_values([], gset:new())).
 
 add_element_test() ->
   ?assert(same_values([a], gset:add(a, []))).
