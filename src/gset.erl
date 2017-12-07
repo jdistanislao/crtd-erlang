@@ -8,11 +8,11 @@ new() ->
 add(Element, GSet) ->
   case lookup(Element, GSet) of
     true -> GSet;
-    _    -> lists:reverse([Element | GSet])
+    _    -> [Element | GSet]
   end.
 
 lookup(Element, GSet) ->
-	lists:member(Element, GSet).
+  lists:member(Element, GSet).
 
 compare(GSet1, GSet2) ->
   lists:all(fun(X) -> lookup(X, GSet2) end, GSet1).
