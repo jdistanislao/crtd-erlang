@@ -17,7 +17,10 @@ lookup(Element, GSet) ->
 compare(GSet1, GSet2) ->
   lists:all(fun(X) -> lookup(X, GSet2) end, GSet1).
 
-merge(GSet1, _GSet2) ->
-  GSet1.
+merge(Gset, []) ->
+  Gset;
+merge(GSet1, [H|T]) ->
+  merge(add(H, GSet1), T).
+
 
 
