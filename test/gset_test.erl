@@ -14,10 +14,10 @@ add_different_elements_test() ->
 add_same_element_twice_test() ->
   ?assertEqual([a], gset:add(a, [a])).
 
-lookup_existent_element() ->
+lookup_existent_element_test() ->
   ?assertNot(gset:lookup(a, [b,c,a])).
 
-lookup_non_existent_element() ->
+lookup_non_existent_element_test() ->
   ?assertNot(gset:lookup(a, [])).
 
 compare_two_gset_test() ->
