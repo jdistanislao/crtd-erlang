@@ -21,7 +21,7 @@ add_element_test_() ->
   ].
 
 add_element_test(L, E, S) ->
-  ?_assert(same_values(L, two_pset:add(E, S))).
+  ?_assert(same_present_values(L, two_pset:add(E, S))).
 
 remove_element_test_() ->
   [
@@ -63,19 +63,19 @@ merge_two_sets_test(E, S1, S2) ->
 %% Utils
 %%
 empty() ->
-  {[], []}.
+  from([], []).
 
 from(A, R) ->
-  {A, R}.
+  {sets:from_list(A), sets:from_list(R)}.
 
-same_values(L, {A, R}) ->
-  case length(lists:subtract(L, A)) of
-    0 -> lists:all(fun(X) -> not lists:member(X, R) end, L);
+same_present_values(L, {A, R}) ->
+  case sets:size(sets:subtract(sets:from_list(L), A)) of
+    0 -> lists:all(fun(X) -> not sets:is_element(X, R) end, L);
     _ -> false
   end.
 
 same_members({EA, ER}, {A, R}) ->
-  LA = length(lists:subtract(EA, A)),
-  LR = length(lists:subtract(ER, R)),
+  LA = sets:size(sets:subtract(EA, A)),
+  LR = sets:size(sets:subtract(ER, R)),
   0 == LA + LR.
 
