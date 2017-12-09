@@ -1,4 +1,4 @@
--module('two_pset').
+-module('twopset').
 
 -export([new/0, add/2, remove/2, lookup/2, compare/2, merge/2]).
 

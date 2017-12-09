@@ -1,4 +1,4 @@
--module('two_pset_test').
+-module('twopset_test').
 
 -include_lib("eunit/include/eunit.hrl").
 
