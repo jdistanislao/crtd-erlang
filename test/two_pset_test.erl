@@ -13,16 +13,15 @@ lookup_a_removed_element_test() ->
   S = from([a], [a, b]),
   ?assertNot(two_pset:lookup(a, S)).
 
-add_new_element_test() ->
-  S = empty(),
-  SA = two_pset:add(a, S),
-  ?assert(same_values([a], SA)),
-  SB = two_pset:add(b, SA),
-  ?assert(same_values([a,b], SB )).
+add_element_test_() ->
+  [
+    add_element_test([a], a, empty()),
+    add_element_test([a,b], b, from([a],[])),
+    add_element_test([a], a, from([a],[]))
+  ].
 
-add_same_element_twice_test() ->
-  S = from([a], []),
-  ?assert(same_values([a], two_pset:add(a, S))).
+add_element_test(L, E, S) ->
+  ?_assert(same_values(L, two_pset:add(E, S))).
 
 remove_element_test_() ->
   [
@@ -34,21 +33,31 @@ remove_element_test_() ->
 remove_element_test(R, E, S) ->
   ?_assertEqual(R, two_pset:remove(E, S)).
 
-compare_two_sets_with_same_values_test() ->
-  A = from([a, b], [a]),
-  B = from([a, b], [a]),
-  ?assert(two_pset:compare(A, B)).
-
 compare_different_sets_test_() ->
   [
-    compare_different_test(from([a], [a]), from([a, b], [a, b])),
-    compare_different_test(from([a,b], [a, b]), from([a], [a])),
-    compare_different_test(from([a], [a]), from([], [])),
-    compare_different_test(from([], []), from([a], [a]))
+    compare_ok_different_test(from([a, b], [a]), from([a, b], [a])),
+    compare_ok_different_test(from([a], [a]), from([a, b], [a,b])),
+    compare_no_different_test(from([a,b], [a,b]), from([a], [a])),
+    compare_no_different_test(from([a], [a]), from([], [])),
+    compare_ok_different_test(from([], []), from([a], [a]))
   ].
 
-compare_different_test(A, B) ->
+compare_ok_different_test(A, B) ->
+  ?_assert(two_pset:compare(A, B)).
+
+compare_no_different_test(A, B) ->
   ?_assertNot(two_pset:compare(A, B)).
+
+merge_two_sets_test_() ->
+  [
+    merge_two_sets_test(from([a], [a]), from([a], [a]), from([a], [a])),
+    merge_two_sets_test(from([a,b], [b]), from([a], []), from([a,b], [b])),
+    merge_two_sets_test(from([a,b], [b]), from([], []), from([a,b], [b])),
+    merge_two_sets_test(from([a,b], [b]), from([a,b], [b]), from([], []))
+  ].
+
+merge_two_sets_test(E, S1, S2) ->
+  ?_assert(same_members(E, two_pset:merge(S1, S2))).
 
 %%
 %% Utils
@@ -60,4 +69,13 @@ from(A, R) ->
   {A, R}.
 
 same_values(L, {A, R}) ->
-  lists:all(fun(X) -> lists:member(X, A) and not lists:member(X, R) end, L).
+  case length(lists:subtract(L, A)) of
+    0 -> lists:all(fun(X) -> not lists:member(X, R) end, L);
+    _ -> false
+  end.
+
+same_members({EA, ER}, {A, R}) ->
+  LA = length(lists:subtract(EA, A)),
+  LR = length(lists:subtract(ER, R)),
+  0 == LA + LR.
+
