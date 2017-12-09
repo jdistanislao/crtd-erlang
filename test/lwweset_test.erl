@@ -11,6 +11,21 @@ add_new_element_test() ->
   #lwweset{elements = E} = lwweset:add(a, 1, S),
   ?assertEqual({1, 0}, maps:get(a, E)).
 
+add_same_element_twice_with_same_timestamp_test() ->
+  S = lwweset:add(a, 1, empty()),
+  #lwweset{elements = E} = lwweset:add(a, 1, S),
+  ?assertEqual({1, 0}, maps:get(a, E)).
+
+add_same_element_twice_with_newer_timestamp_test() ->
+  S = lwweset:add(a, 1, empty()),
+  #lwweset{elements = E} = lwweset:add(a, 2, S),
+  ?assertEqual({2, 0}, maps:get(a, E)).
+
+add_same_element_twice_with_older_timestamp_test() ->
+  S = lwweset:add(a, 2, empty()),
+  #lwweset{elements = E} = lwweset:add(a, 1, S),
+  ?assertEqual({2, 0}, maps:get(a, E)).
+
 
 %%
 %% Utils
