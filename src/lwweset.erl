@@ -8,15 +8,11 @@
 new() ->
   #lwweset{bias = add, elements = maps:new()}.
 
-add(E, T, S = #lwweset{elements = M}) ->
-  NewTimestamp = case maps:is_key(E, M) of
-    true  -> get_add_timestamp(T, maps:get(E, M));
-    _     -> {T, 0}
-  end,
-  S#lwweset{elements = maps:put(E, NewTimestamp, M)}.
+add(E, T, S) ->
+  update(E, T, S, fun get_added_timestamp/2).
 
-remove(_E, _T, _S) ->
-  erlang:error(not_implemented).
+remove(E, T, S) ->
+  update(E, T, S, fun get_removed_timestamp/2).
 
 lookup(_E, _S) ->
   erlang:error(not_implemented).
@@ -27,7 +23,24 @@ compare(_S1, _S2) ->
 merge(_S1, _S2) ->
   erlang:error(not_implemented).
 
-get_add_timestamp(T, {A, R}) when T > A ->
+%%
+%% Utils
+%%
+
+update(E, T, S = #lwweset{elements = M}, TimestampFn) ->
+  Timestamp = maps:get(E, M, {T, 0}),
+  NewTimestamp = case maps:is_key(E, M) of
+                   true  -> TimestampFn(T, Timestamp);
+                   _     -> Timestamp
+                 end,
+  S#lwweset{elements = maps:put(E, NewTimestamp, M)}.
+
+get_added_timestamp(T, {A, R}) when T > A ->
   {T, R};
-get_add_timestamp(_, {A, R})->
+get_added_timestamp(_, {A, R})->
+  {A, R}.
+
+get_removed_timestamp(T, {A, R}) when T > R ->
+  {A, T};
+get_removed_timestamp(_, {A, R})->
   {A, R}.
