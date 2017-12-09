@@ -14,11 +14,15 @@ add(E, T, S) ->
 remove(E, T, S) ->
   update(E, T, S, fun get_removed_timestamp/2).
 
-lookup(_E, _S) ->
-  erlang:error(not_implemented).
+lookup(E, #lwweset{bias = B, elements = M}) ->
+  case maps:is_key(E, M) of
+    true  -> exists(maps:get(E, M), B);
+    _     -> false
+  end.
 
-compare(_S1, _S2) ->
-  erlang:error(not_implemented).
+compare(#lwweset{elements = M1}, #lwweset{elements = M2}) ->
+  M = maps:without(maps:keys(M2), M1),
+  maps:size(M) == 0.
 
 merge(_S1, _S2) ->
   erlang:error(not_implemented).
@@ -44,3 +48,12 @@ get_removed_timestamp(T, {A, R}) when T > R ->
   {A, T};
 get_removed_timestamp(_, {A, R})->
   {A, R}.
+
+exists({A, R}, _) when A > R ->
+  true;
+exists({A, R}, _) when A < R ->
+  false;
+exists({A, R}, add) when A == R ->
+  true;
+exists(_, _)  ->
+  erlang:error(not_implemented).
