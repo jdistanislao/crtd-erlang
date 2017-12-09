@@ -90,6 +90,32 @@ compare_different_sets_test() ->
   S4 = lwweset:add(b, 1, empty()),
   ?assertNot(lwweset:compare(S3b, S4)).
 
+merge_sets_with_same_elements_test() ->
+  S1a = lwweset:add(a, 1, empty()),
+  S1r = lwweset:remove(a, 2, S1a),
+  S2 = lwweset:add(a, 3, empty()),
+  #lwweset{elements = E} = lwweset:merge(S1r, S2),
+  ?assertEqual({3, 2}, maps:get(a, E)).
+
+merge_sets_with_some_elements_in_common_test() ->
+  S1 = lwweset:add(a, 1, empty()),
+  S1b = lwweset:add(b, 2, S1),
+  S2 = lwweset:add(a, 3, empty()),
+  S2c = lwweset:add(c, 6, S2),
+  #lwweset{elements = E} = lwweset:merge(S1b, S2c),
+  ?assertEqual({3, 0}, maps:get(a, E)),
+  ?assertEqual({2, 0}, maps:get(b, E)),
+  ?assertEqual({6, 0}, maps:get(c, E)).
+
+merge_disjoined_sets_test() ->
+  S1 = lwweset:add(a, 1, empty()),
+  S2 = lwweset:add(b, 3, empty()),
+  S2c = lwweset:add(c, 6, S2),
+  #lwweset{elements = E} = lwweset:merge(S1, S2c),
+  ?assertEqual({1, 0}, maps:get(a, E)),
+  ?assertEqual({3, 0}, maps:get(b, E)),
+  ?assertEqual({6, 0}, maps:get(c, E)).
+
 %%
 %% Utils
 %%
