@@ -24,11 +24,24 @@ lookup(E, S) ->
     _     -> false
   end.
 
-compare(_S1, _S2) ->
-  erlang:error(not_implemented).
+compare(S1, S2) ->
+  M = maps:without(maps:keys(S2), S1),
+  case maps:size(M) of
+    0 -> true;
+    _ -> false
+  end.
 
-merge(_S1, _S2) ->
-  erlang:error(not_implemented).
+merge(S1, S2) ->
+  M1Keys = maps:keys(S1),
+  M2Keys = maps:keys(S2),
+  Keys = maps:keys(maps:with(M2Keys, S1)),
+  MergeFn = fun(X, Acc) ->
+    {A1, R1} = maps:get(X, S1),
+    {A2, R2} = maps:get(X, S2),
+    maps:put(X, {sets:union(A1, A2), sets:union(R1, R2)}, Acc) end,
+  MSame = lists:foldl(MergeFn, maps:new(), Keys),
+  MDifferent = maps:merge(maps:without(M2Keys, S1), maps:without(M1Keys, S2)),
+  maps:merge(MSame, MDifferent).
 
 %%
 %% Utils
