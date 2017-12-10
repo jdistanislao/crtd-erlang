@@ -28,12 +28,12 @@ compare(#lwweset{elements = M1}, #lwweset{elements = M2}) ->
 merge(#lwweset{elements = M1}, #lwweset{elements = M2}) ->
   M1Keys = maps:keys(M1),
   M2Keys = maps:keys(M2),
-  Keys = sets:intersection(sets:from_list(M1Keys), sets:from_list(M2Keys)),
-  GreaterFn = fun(X, MAcc) ->
+  Keys = maps:keys(maps:with(M2Keys, M1)),
+  GreaterFn = fun(X, Acc) ->
     {A1, R1} = maps:get(X, M1),
     {A2, R2} = maps:get(X, M2),
-    maps:put(X, {greater(A1, A2), greater(R1, R2)}, MAcc) end,
-  MSame = sets:fold(GreaterFn, maps:new(), Keys),
+    maps:put(X, {greater(A1, A2), greater(R1, R2)}, Acc) end,
+  MSame = lists:foldl(GreaterFn, maps:new(), Keys),
   MDifferent = maps:merge(maps:without(M2Keys, M1), maps:without(M1Keys, M2)),
   #lwweset{bias = ?BIAS, elements = maps:merge(MSame, MDifferent)}.
 
