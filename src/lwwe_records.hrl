@@ -1,1 +1,0 @@
--record(lwweset, {bias, elements}).

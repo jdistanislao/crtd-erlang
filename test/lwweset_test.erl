@@ -1,7 +1,7 @@
 -module(lwweset_test).
 
 -include_lib("eunit/include/eunit.hrl").
--include_lib("../src/lwwe_records.hrl").
+-include_lib("../src/crtd_records.hrl").
 
 new_test() ->
   ?assertEqual(empty(), lwweset:new()).

@@ -1,6 +1,6 @@
 -module(lwweset).
 
--include_lib("lwwe_records.hrl").
+-include_lib("crtd_records.hrl").
 
 -export([new/0, add/3, remove/3, lookup/2, compare/2, merge/2]).
 

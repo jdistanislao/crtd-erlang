@@ -1,0 +1,2 @@
+-record(lwweset, {bias, elements}).
+-record(orset, {bias, elements}).
